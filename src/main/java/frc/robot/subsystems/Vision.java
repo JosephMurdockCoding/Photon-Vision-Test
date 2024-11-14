@@ -5,6 +5,8 @@
 package frc.robot.subsystems;
 
 import org.photonvision.PhotonCamera;
+import org.photonvision.targeting.PhotonPipelineResult;
+import org.photonvision.targeting.PhotonTrackedTarget;
 
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTable;
@@ -15,34 +17,35 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 
 public class Vision extends SubsystemBase {
+
+  private PhotonCamera camera;
+  private PhotonPipelineResult result;
+  private PhotonTrackedTarget target;
+  private boolean hasTargets;
+  private double yaw;
+  private double pitch;
+  private double area;
+  private double skew;
+  private int id;
+
   /** Creates a new Vision. */
   public Vision() {
 
-    PhotonCamera camera = new PhotonCamera("103Cybersonics");
-
-     NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight-fv");
-
-     NetworkTableEntry rawBytes = table.getEntry("rawBytes");
-     NetworkTableEntry latencyMillis = table.getEntry("latencyMillis");
-     NetworkTableEntry targetPitch = table.getEntry("targetPitch");
-
-     NetworkTableEntry targetYaw = table.getEntry("targetYaw");
-     NetworkTableEntry targetArea = table.getEntry("targetArea");
-     NetworkTableEntry targetSkew = table.getEntry("targetSkew");
-
-     NetworkTableEntry targetPose = table.getEntry("targetPose");
-     NetworkTableEntry tltargetPixelsXEntry = table.getEntry("targetPixelsX");
-     NetworkTableEntry targetPixelsY = table.getEntry("targetPixelsY");
-
-     NetworkTableEntry targetspaceEntry = table.getEntry("botpose_targetspace");
-     double[] targetspaceCache = new double[6]; // array that will hold all the positions
-
-     NetworkTableEntry botpose_wpiblueEntry = table.getEntry("botpose_wpiblue");
-     double[] botpose_wpiblueCache = new double[7];
+    camera = new PhotonCamera("photonvison");
+    result = camera.getLatestResult();
+    target = result.getBestTarget();
+    hasTargets = result.hasTargets();
+    yaw = target.getYaw();
+    pitch = target.getPitch();
+    area = target.getArea();
+    skew = target.getSkew();
+    id = target.getFiducialId();
   }
 
   @Override
   public void periodic() {
-    // This method will be called once per scheduler run
+    if(id==7){
+      yaw = target.getYaw();
+    }
   }
 }
